@@ -6,7 +6,28 @@ namespace techswitch_fizz_buzz.cs
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            for (int i = 1; i <= 100; i++)
+            {
+                if (i % 3 != 0 && i % 5 != 0)
+                {
+                    Console.WriteLine(i);
+                    continue;
+                }
+                else if (i % 3 != 0)
+                {
+                    Console.WriteLine("Fizz");
+                    continue;
+                }
+                else if (i % 5 != 0)
+                {
+                    Console.WriteLine("Buzz");
+                    continue;
+                }
+                else
+                {
+                    Console.WriteLine("FizzBuzz");
+                }
+            }
         }
     }
 }
