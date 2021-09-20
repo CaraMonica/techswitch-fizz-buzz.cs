@@ -6,7 +6,6 @@ namespace techswitch_fizz_buzz.cs
 {
     class FizzBuzz
     {
-
         static string[] YES = new string[] { "y", "Y", "Yes", "yes", "yeah", "Yeah" };
         static Dictionary<int, string> WORD_BY_FACTOR = new Dictionary<int, string>()
         {
@@ -20,12 +19,14 @@ namespace techswitch_fizz_buzz.cs
         static List<int> SPECIAL_FACTORS = new List<int> { 11, 17, 13 };
 
         static List<int> ApplyBong(List<int> factors) => factors.Where(SPECIAL_FACTORS.Contains).ToList();
+
         static List<int> ApplyReverse(List<int> factors)
         {
             List<int> factorsCopy = new List<int>(factors);
             factorsCopy.Remove(17);
             return factorsCopy.Where(SPECIAL_FACTORS.Contains).ToList();
         }
+
         static List<int> ApplyFezz(List<int> factors)
         {
             List<int> factorsCopy = new List<int>(factors);
@@ -34,6 +35,7 @@ namespace techswitch_fizz_buzz.cs
             factorsCopy.Insert(index, 13);
             return factorsCopy;
         }
+
         static Dictionary<int, Func<List<int>, List<int>>> FUNCTION_BY_FACTOR = new Dictionary<int, Func<List<int>, List<int>>>()
         {
             {11, ApplyBong},
@@ -42,6 +44,7 @@ namespace techswitch_fizz_buzz.cs
         };
 
         static bool IsDivisible(int n, int factor) => n % factor == 0;
+
         static bool ShouldApplyRule(int n, List<int> factors, int factor) => factors.Contains(factor) && IsDivisible(n, factor);
 
         static int GetNumber(string message)
@@ -53,7 +56,6 @@ namespace techswitch_fizz_buzz.cs
         static List<int> GetFactors()
         {
             Console.WriteLine("Would you like to use all of the rules? y/n");
-
             if (YES.Contains(Console.ReadLine()))
             {
                 return WORD_BY_FACTOR.Keys.ToList();
@@ -64,7 +66,6 @@ namespace techswitch_fizz_buzz.cs
             Console.WriteLine("Type 'stop' when you're finished");
 
             List<int> factors = new List<int>();
-
             while (factors.Count < WORD_BY_FACTOR.Count)
             {
                 string rule = Console.ReadLine();
