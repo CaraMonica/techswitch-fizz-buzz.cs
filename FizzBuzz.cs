@@ -5,27 +5,42 @@ using System.Linq;
 namespace techswitch_fizz_buzz.cs
 {
 
-    class Program
+    class FizzBuzz
     {
-
+        static string[] YES = new string[] { "y", "Y", "Yes", "yes", "yeah", "Yeah" };
+        static int[] SPECIAL_RULES = new int[] { 11, 13, 17 };
+        static Dictionary<int, string> RULE_DICT = new Dictionary<int, string>()
+        {
+            {3,"Fizz"},
+            {5, "Buzz"},
+            {7,"Bang"},
+            {11,"Bong"},
+            {13, "Fezz"},
+            {17,"reverse"},
+        };
+        static bool IsDivisible(int number, int factor) => number % factor == 0;
         static int GetNumber(string message)
         {
             Console.WriteLine(message);
             return Convert.ToInt32(Console.ReadLine());
         }
-
         static IEnumerable<int> GetRules()
         {
-            Console.WriteLine("Please select rules:");
-            Console.WriteLine(string.Join(Environment.NewLine, ruleDict));
+            Console.WriteLine("Would you like to use all of the rules? y/n");
+
+            if (YES.Contains(Console.ReadLine()))
+            {
+                return RULE_DICT.Keys;
+            }
+
+            Console.WriteLine("Please select rules via their number:");
+            Console.WriteLine(string.Join(Environment.NewLine, RULE_DICT));
             Console.WriteLine("Type 'stop' when you're finished");
 
             List<int> rules = new List<int>();
 
-            Console.WriteLine(ruleDict.Count);
-            while (rules.Count < ruleDict.Count)
+            while (rules.Count < RULE_DICT.Count)
             {
-                Console.WriteLine(rules.Count);
                 string rule = Console.ReadLine();
 
                 if (rule.Equals("stop"))
@@ -38,13 +53,12 @@ namespace techswitch_fizz_buzz.cs
                     {
                         break;
                     }
-
                 }
                 else
                 {
                     int ruleNumber;
 
-                    if (int.TryParse(rule, out ruleNumber) && ruleDict.ContainsKey(ruleNumber) && !rules.Contains(ruleNumber))
+                    if (int.TryParse(rule, out ruleNumber) && RULE_DICT.ContainsKey(ruleNumber) && !rules.Contains(ruleNumber))
                     {
                         rules.Add(ruleNumber);
                     }
@@ -58,20 +72,6 @@ namespace techswitch_fizz_buzz.cs
             return rules.AsEnumerable();
 
         }
-
-        static Dictionary<int, string> ruleDict = new Dictionary<int, string>()
-        {
-            {3,"Fizz"},
-            {5, "Buzz"},
-            {7,"Bang"},
-            {11,"Bong"},
-            {13, "Fezz"},
-            {17,"reverse"},
-        };
-
-        static int[] SPECIAL_RULES = new int[] { 11, 13, 17 };
-
-        static bool IsDivisible(int number, int factor) => number % factor == 0;
 
         static string GetFizzBuzzString(int number, IEnumerable<int> rules)
         {
@@ -95,18 +95,18 @@ namespace techswitch_fizz_buzz.cs
                     {
                         int indexOfFirstB = result.FindIndex(word => word[0].Equals('B'));
                         int index = indexOfFirstB == -1 ? 0 : indexOfFirstB;
-                        result.Insert(index, ruleDict[rule]);
+                        result.Insert(index, RULE_DICT[rule]);
                     }
                     else
                     {
-                        result.Add(ruleDict[rule]);
+                        result.Add(RULE_DICT[rule]);
                     }
                 }
             }
             return result.Count() == 0 ? number.ToString() : String.Join("", result);
         }
 
-        static void FizzBuzz(int start, int end, IEnumerable<int> rules)
+        static void RunFizzBuzz(int start, int end, IEnumerable<int> rules)
         {
             for (int i = start; i < end; i++)
             {
@@ -120,7 +120,7 @@ namespace techswitch_fizz_buzz.cs
             int start = GetNumber("Start number:");
             int end = GetNumber("End number:");
             IEnumerable<int> rules = GetRules();
-            FizzBuzz(start, end, rules);
+            RunFizzBuzz(start, end, rules);
         }
     }
 }
