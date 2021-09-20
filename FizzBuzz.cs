@@ -4,48 +4,73 @@ using System.Linq;
 
 namespace techswitch_fizz_buzz.cs
 {
-
     class FizzBuzz
     {
+
         static string[] YES = new string[] { "y", "Y", "Yes", "yes", "yeah", "Yeah" };
-        static int[] SPECIAL_RULES = new int[] { 11, 13, 17 };
-        static Dictionary<int, string> RULE_DICT = new Dictionary<int, string>()
+        static Dictionary<int, string> WORD_BY_FACTOR = new Dictionary<int, string>()
         {
             {3,"Fizz"},
             {5, "Buzz"},
             {7,"Bang"},
             {11,"Bong"},
             {13, "Fezz"},
-            {17,"reverse"},
+            {17,"Reverse"},
         };
-        static bool IsDivisible(int number, int factor) => number % factor == 0;
+        static List<int> SPECIAL_FACTORS = new List<int> { 11, 17, 13 };
+
+        static List<int> ApplyBong(List<int> factors) => factors.Where(SPECIAL_FACTORS.Contains).ToList();
+        static List<int> ApplyReverse(List<int> factors)
+        {
+            List<int> factorsCopy = new List<int>(factors);
+            factorsCopy.Remove(17);
+            return factorsCopy.Where(SPECIAL_FACTORS.Contains).ToList();
+        }
+        static List<int> ApplyFezz(List<int> factors)
+        {
+            List<int> factorsCopy = new List<int>(factors);
+            factorsCopy.Remove(13);
+            int index = WORD_BY_FACTOR[factorsCopy[0]][0].Equals('F') ? 1 : 0;
+            factorsCopy.Insert(index, 13);
+            return factorsCopy;
+        }
+        static Dictionary<int, Func<List<int>, List<int>>> FUNCTION_BY_FACTOR = new Dictionary<int, Func<List<int>, List<int>>>()
+        {
+            {11, ApplyBong},
+            {17, ApplyReverse},
+            {13, ApplyFezz},
+        };
+
+        static bool IsDivisible(int n, int factor) => n % factor == 0;
+        static bool ShouldApplyRule(int n, List<int> factors, int factor) => factors.Contains(factor) && IsDivisible(n, factor);
+
         static int GetNumber(string message)
         {
             Console.WriteLine(message);
             return Convert.ToInt32(Console.ReadLine());
         }
-        static IEnumerable<int> GetRules()
+
+        static List<int> GetFactors()
         {
             Console.WriteLine("Would you like to use all of the rules? y/n");
 
             if (YES.Contains(Console.ReadLine()))
             {
-                return RULE_DICT.Keys;
+                return WORD_BY_FACTOR.Keys.ToList();
             }
 
             Console.WriteLine("Please select rules via their number:");
-            Console.WriteLine(string.Join(Environment.NewLine, RULE_DICT));
+            Console.WriteLine(string.Join(Environment.NewLine, WORD_BY_FACTOR));
             Console.WriteLine("Type 'stop' when you're finished");
 
-            List<int> rules = new List<int>();
+            List<int> factors = new List<int>();
 
-            while (rules.Count < RULE_DICT.Count)
+            while (factors.Count < WORD_BY_FACTOR.Count)
             {
                 string rule = Console.ReadLine();
-
-                if (rule.Equals("stop"))
+                if (rule.ToLower().Equals("stop"))
                 {
-                    if (rules.Count == 0)
+                    if (factors.Count == 0)
                     {
                         Console.WriteLine("Must have at least one rule.");
                     }
@@ -57,10 +82,9 @@ namespace techswitch_fizz_buzz.cs
                 else
                 {
                     int ruleNumber;
-
-                    if (int.TryParse(rule, out ruleNumber) && RULE_DICT.ContainsKey(ruleNumber) && !rules.Contains(ruleNumber))
+                    if (int.TryParse(rule, out ruleNumber) && WORD_BY_FACTOR.ContainsKey(ruleNumber) && !factors.Contains(ruleNumber))
                     {
-                        rules.Add(ruleNumber);
+                        factors.Add(ruleNumber);
                     }
                     else
                     {
@@ -69,58 +93,31 @@ namespace techswitch_fizz_buzz.cs
                 }
             }
 
-            return rules.AsEnumerable();
-
+            return factors.OrderBy(i => i).ToList();
         }
 
-        static string GetFizzBuzzString(int number, IEnumerable<int> rules)
+        static string GetFizzBuzzString(int n, List<int> factors)
         {
-            List<string> result = new List<string>();
-
-            if (rules.Contains(11) && IsDivisible(number, 11))
+            foreach (int f in SPECIAL_FACTORS)
             {
-                rules = rules.Where(x => SPECIAL_RULES.Contains(x));
+                factors = ShouldApplyRule(n, factors, f) ? FUNCTION_BY_FACTOR[f](factors) : factors;
             }
 
-            if (rules.Contains(17) && IsDivisible(number, 17))
-            {
-                rules = rules.Take(rules.Count() - 1).Reverse();
-            }
-
-            foreach (int rule in rules)
-            {
-                if (IsDivisible(number, rule))
-                {
-                    if (rule == 13)
-                    {
-                        int indexOfFirstB = result.FindIndex(word => word[0].Equals('B'));
-                        int index = indexOfFirstB == -1 ? 0 : indexOfFirstB;
-                        result.Insert(index, RULE_DICT[rule]);
-                    }
-                    else
-                    {
-                        result.Add(RULE_DICT[rule]);
-                    }
-                }
-            }
-            return result.Count() == 0 ? number.ToString() : String.Join("", result);
+            IEnumerable<string> result = factors.Where(f => IsDivisible(n, f)).Select(f => WORD_BY_FACTOR[f]);
+            return result.Count() == 0 ? n.ToString() : String.Join("", result);
         }
 
-        static void RunFizzBuzz(int start, int end, IEnumerable<int> rules)
+        static void RunFizzBuzz(int start, int end, List<int> factors)
         {
-            for (int i = start; i < end; i++)
+            for (int i = start; i <= end; i++)
             {
-                Console.WriteLine(GetFizzBuzzString(i, rules));
-
+                Console.WriteLine(GetFizzBuzzString(i, factors));
             }
         }
 
         static void Main(string[] args)
         {
-            int start = GetNumber("Start number:");
-            int end = GetNumber("End number:");
-            IEnumerable<int> rules = GetRules();
-            RunFizzBuzz(start, end, rules);
+            RunFizzBuzz(GetNumber("Start number:"), GetNumber("End number:"), GetFactors());
         }
     }
 }
