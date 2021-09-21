@@ -52,6 +52,21 @@ namespace techswitch_fizz_buzz.cs
             return Convert.ToInt32(Console.ReadLine());
         }
 
+        static string GetFizzBuzzString(int n, List<int> factors)
+        {
+            SPECIAL_FACTORS.ForEach(f => factors = ShouldApplyRule(n, factors, f) ? FUNCTION_BY_FACTOR[f](factors) : factors);
+            IEnumerable<string> result = factors.Where(f => IsDivisible(n, f)).Select(f => WORD_BY_FACTOR[f]);
+            return result.Count() == 0 ? n.ToString() : String.Join("", result);
+        }
+
+        static void RunFizzBuzz(int start, int end, List<int> factors)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                Console.WriteLine(GetFizzBuzzString(i, factors));
+            }
+        }
+
         static List<int> GetFactors()
         {
             Console.WriteLine("Would you like to use all of the rules? y/n");
@@ -97,20 +112,6 @@ namespace techswitch_fizz_buzz.cs
             return factors.OrderBy(i => i).ToList();
         }
 
-        static string GetFizzBuzzString(int n, List<int> factors)
-        {
-            SPECIAL_FACTORS.ForEach(f => factors = ShouldApplyRule(n, factors, f) ? FUNCTION_BY_FACTOR[f](factors) : factors);
-            IEnumerable<string> result = factors.Where(f => IsDivisible(n, f)).Select(f => WORD_BY_FACTOR[f]);
-            return result.Count() == 0 ? n.ToString() : String.Join("", result);
-        }
-
-        static void RunFizzBuzz(int start, int end, List<int> factors)
-        {
-            for (int i = start; i <= end; i++)
-            {
-                Console.WriteLine(GetFizzBuzzString(i, factors));
-            }
-        }
 
         static void Main(string[] args)
         {
