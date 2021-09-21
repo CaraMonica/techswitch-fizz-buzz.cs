@@ -6,7 +6,6 @@ namespace techswitch_fizz_buzz.cs
 {
     class FizzBuzz
     {
-        static string[] YES = new string[] { "y", "Y", "Yes", "yes", "yeah", "Yeah" };
         static Dictionary<int, string> WORD_BY_FACTOR = new Dictionary<int, string>()
         {
             {3,"Fizz"},
@@ -56,7 +55,8 @@ namespace techswitch_fizz_buzz.cs
         static List<int> GetFactors()
         {
             Console.WriteLine("Would you like to use all of the rules? y/n");
-            if (YES.Contains(Console.ReadLine()))
+            string[] yes = new string[] { "y", "Y", "Yes", "yes", "yeah", "Yeah" };
+            if (yes.Contains(Console.ReadLine()))
             {
                 return WORD_BY_FACTOR.Keys.ToList();
             }
@@ -99,11 +99,7 @@ namespace techswitch_fizz_buzz.cs
 
         static string GetFizzBuzzString(int n, List<int> factors)
         {
-            foreach (int f in SPECIAL_FACTORS)
-            {
-                factors = ShouldApplyRule(n, factors, f) ? FUNCTION_BY_FACTOR[f](factors) : factors;
-            }
-
+            SPECIAL_FACTORS.ForEach(f => factors = ShouldApplyRule(n, factors, f) ? FUNCTION_BY_FACTOR[f](factors) : factors);
             IEnumerable<string> result = factors.Where(f => IsDivisible(n, f)).Select(f => WORD_BY_FACTOR[f]);
             return result.Count() == 0 ? n.ToString() : String.Join("", result);
         }
